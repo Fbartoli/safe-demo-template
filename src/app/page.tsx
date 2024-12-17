@@ -1,95 +1,225 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import makeBlockie from 'ethereum-blockies-base64'
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <header>
+        <h2>{'Safe{DEMO}'}</h2>
+      </header>
+      <main>
+        <h1>Application Title</h1>
+        <a
+          href="https://github.com/5afe/safe-tutorial-template"
+          target="_blank"
+        >
+          GitHub Repository
+        </a>
+        <a href="https://docs.safe.global">Safe Developer Documentation</a>
+        <p>
+          Applications can include components such as <a href="#cards">Cards</a>
+          , <a href="#grids">Grids</a>, <a href="#sections">Sections</a>,{' '}
+          <a href="#paragraphs">Paragraphs</a>, Titles, Links,{' '}
+          <a href="#addresses">Addresses</a>, <a href="#forms">Forms</a>,{' '}
+          <a href="#buttons">Buttons</a>, <a href="#callouts">Callouts</a>, and{' '}
+          <a href="#boxes">Boxes</a>. All components are responsive, and fully
+          support both light and dark themes.
+        </p>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+        <div className="card" id="cards">
+          <h2>Cards</h2>
+          <p>Simple Card.</p>
+        </div>
+
+        <div className="grid" id="grids">
+          <div className="card">
+            <h2>Card 1 in Grid</h2>
+            <p>Simple card inside a Grid.</p>
+          </div>
+          <div className="card">
+            <h2>Card 2 in Grid</h2>
+            <p>Simple card inside a Grid.</p>
+          </div>
+        </div>
+
+        <div className="card" id="sections">
+          <div className="section">
+            <h2>Card Section 1</h2>
+            <div>
+              <p>Cards can include multiple sections.</p>
+              <p>Sections can have multiple components inside.</p>
+              <p className="loading">
+                Loading text before a result is revealed...
+              </p>
+            </div>
+          </div>
+          <div className="section">
+            <h2>Card Section 2</h2>
+            <div>
+              <p>Sections can be split with a separator line.</p>
+              <div className="separator" />
+              <p>Sections can be split with a separator line.</p>
+              <div className="separator" />
+              <p>Sections can be split with a separator line.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="card" id="addresses">
+          <div className="section">
+            <h2>Addresses</h2>
+            <div>
+              <p>Applications can use Ethereum addresses with identicons.</p>
+              <div className="address">
+                <img
+                  className="blockie"
+                  src={makeBlockie(
+                    '0x1111111111111111111111111111111111111111'
+                  )}
+                />
+                <pre>0x1111111111111111111111111111111111111111</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card" id="forms">
+          <div className="section">
+            <h2>Forms</h2>
+            <div>
+              <p>
+                Applications can have different input fields to create forms
+                like the one below. There are two types of fields: text, and
+                number.
+              </p>
+              <p className="title">Number field name</p>
+              <input type="number" placeholder="Placeholder" />
+              <p className="title">Text field name</p>
+              <input type="text" placeholder="Placeholder" />
+            </div>
+          </div>
+        </div>
+
+        <div className="card" id="buttons">
+          <div className="section">
+            <h2>Buttons</h2>
+            <div>
+              <p>
+                Applications can have buttons of two types: primary and
+                secondary buttons.
+              </p>
+              <div className="actions">
+                <a href="">
+                  <button className="primary-button">Primary Button</button>
+                </a>
+                <a href="">
+                  <button className="secondary-button">Secondary Button</button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card" id="callouts">
+          <div className="section">
+            <h2>Callouts</h2>
+            <div>
+              <p>
+                Applications can use callouts like the ones listed below. There
+                are four types: SUCCESS, INFO, WARNING, and ERROR. Within each
+                callout, you can add a title, paragraphs, links, addresses, and
+                buttons. All of these elements are optional and can be combined
+                in many ways to suit your needs.
+              </p>
+              <div className="callout-success">
+                <p>
+                  This is a SUCCESS callout. <a href="">This is a link.</a>
+                </p>
+                <div className="address">
+                  <img
+                    className="blockie"
+                    src={makeBlockie(
+                      '0x2222222222222222222222222222222222222222'
+                    )}
+                  />
+                  <pre>0x2222222222222222222222222222222222222222</pre>
+                </div>
+              </div>
+              <div className="callout-info">
+                <p>This is an INFO callout.</p>
+                <a href="">This is a link.</a>
+                <div className="actions">
+                  <a href="">
+                    <button className="secondary-button">Call to action</button>
+                  </a>
+                </div>
+              </div>
+              <div className="callout-warning">
+                <p>This is a WARNING callout.</p>
+              </div>
+              <div className="callout-error">
+                <p className="title">Callout Title</p>
+                <p>This is an ERROR callout.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card" id="boxes">
+          <div className="section">
+            <h2>Boxes</h2>
+            <div>
+              <p>
+                Applications can have boxes like the ones listed below. Within
+                each box, you can add a title, paragraphs, links, callouts,
+                forms, and buttons. All of these elements are optional and can
+                be combined in many ways to suit your needs.
+              </p>
+              <div className="box">
+                <p>
+                  This is a box. <a href="">This is a link.</a>
+                </p>
+              </div>
+              <div className="box">
+                <p className="title">Address</p>
+                <input type="text" placeholder="Address" />
+              </div>
+              <div className="box">
+                <p>This is a box.</p>
+                <div className="address">
+                  <img
+                    className="blockie"
+                    src={makeBlockie(
+                      '0x3333333333333333333333333333333333333333'
+                    )}
+                  />
+                  <pre>0x3333333333333333333333333333333333333333</pre>
+                </div>
+              </div>
+              <div className="box">
+                <p className="title">Box Title</p>
+                <p>This is a box.</p>
+                <div className="callout-warning">
+                  <p>
+                    This is a WARNING callout. <a href="">This is a link.</a>
+                  </p>
+                  <div className="actions">
+                    <a href="">
+                      <button className="secondary-button">
+                        Call to action
+                      </button>
+                    </a>
+                  </div>
+                </div>
+                <div className="actions">
+                  <a href="">
+                    <button className="primary-button">Call to action</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </>
   )
 }
