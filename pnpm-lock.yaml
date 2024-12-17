@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      ethereum-blockies-base64:
+        specifier: ^1.0.2
+        version: 1.0.2
       next:
         specifier: 15.0.3
         version: 15.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -244,6 +247,9 @@ packages:
     resolution: {integrity: sha512-bwy0MGW55bG41VqxxypOsdSdGqLwXPI/focwgTYCFMbdUiBAxLg9CFzG08sz2aqzknwiX7Hkl0bQENjg8iLByw==}
     engines: {node: '>=8'}
 
+  ethereum-blockies-base64@1.0.2:
+    resolution: {integrity: sha512-Vg2HTm7slcWNKaRhCUl/L3b4KrB8ohQXdd5Pu3OI897EcR6tVRvUqdTwAyx+dnmoDzj8e2bwBLDQ50ByFmcz6w==}
+
   is-arrayish@0.3.2:
     resolution: {integrity: sha512-eVRqCvVlZbuw3GrM63ovNSNAeA1K16kaR/LRY/92w0zxQ5/1YzwblUX652i4Xs9RwAGjW9d9y6X88t8OaAJfWQ==}
 
@@ -282,6 +288,9 @@ packages:
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
+
+  pnglib@0.0.1:
+    resolution: {integrity: sha512-95ChzOoYLOPIyVmL+Y6X+abKGXUJlvOVLkB1QQkyXl7Uczc6FElUy/x01NS7r2GX6GRezloO/ecCX9h4U9KadA==}
 
   postcss@8.4.31:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
@@ -510,6 +519,10 @@ snapshots:
   detect-libc@2.0.3:
     optional: true
 
+  ethereum-blockies-base64@1.0.2:
+    dependencies:
+      pnglib: 0.0.1
+
   is-arrayish@0.3.2:
     optional: true
 
@@ -547,6 +560,8 @@ snapshots:
       - babel-plugin-macros
 
   picocolors@1.1.1: {}
+
+  pnglib@0.0.1: {}
 
   postcss@8.4.31:
     dependencies:
