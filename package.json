@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier src/{*,**/*}.{ts,tsx} -w"
+    "format": "prettier 'src/**/*.{ts,tsx}' -w"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.1",
