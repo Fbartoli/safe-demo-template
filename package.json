@@ -10,10 +10,15 @@
     "format": "prettier src/{*,**/*}.{ts,tsx} -w"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.1",
+    "@safe-global/safe-react-hooks": "^0.2.0",
+    "@tanstack/react-query": "^5.62.8",
     "ethereum-blockies-base64": "^1.0.2",
     "next": "15.0.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "viem": "^2.21.55",
+    "wagmi": "^2.14.3"
   },
   "devDependencies": {
     "@types/node": "^20",
