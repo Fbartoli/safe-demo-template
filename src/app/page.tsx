@@ -38,16 +38,6 @@ export default function Home() {
             <a href="https://docs.safe.global" target="_blank">
               Safe Developer Documentation
             </a>
-            <p>
-              Applications can include components such as{' '}
-              <a href="#cards">Cards</a>, <a href="#grids">Grids</a>,{' '}
-              <a href="#sections">Sections</a>,{' '}
-              <a href="#paragraphs">Paragraphs</a>, Titles, Links,{' '}
-              <a href="#addresses">Addresses</a>, <a href="#forms">Forms</a>,{' '}
-              <a href="#buttons">Buttons</a>, <a href="#callouts">Callouts</a>,
-              and <a href="#boxes">Boxes</a>. All components are responsive, and
-              fully support both light and dark themes.
-            </p>
             <Application />
           </main>
         </RainbowKitProvider>
