@@ -1,7 +1,4 @@
-import {
-  SafeProvider,
-  createConfig
-} from '@safe-global/safe-react-hooks'
+import { SafeProvider, createConfig } from '@safe-global/safe-react-hooks'
 import makeBlockie from 'ethereum-blockies-base64'
 import { useAccount } from 'wagmi'
 
@@ -37,7 +34,6 @@ export default function Application() {
 
   return (
     <SafeProvider config={safeConfig}>
-
       {/* REMOVE FROM HERE */}
 
       <div className="card" id="cards">
