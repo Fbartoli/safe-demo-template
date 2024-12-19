@@ -21,6 +21,8 @@
   --info-note-background: #EFFCFF;
   --warning-note-background: #FFF1E0;
   --error-note-background: #FFE6EA;
+
+  --border-radius: 6px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,7 +30,7 @@
     --header: #1C1C1C;
     --background: #121312;
     --border: #303033;
-    --title: #12FF80;
+    --title: #FFFFFF;
     --card: #1C1C1C;
     --text: #FFFFFF;
     --loading-text: #A1A3A7;
@@ -106,7 +108,7 @@ input[type="text"], input[type="number"] {
   color: var(--text);
   background: transparent;
   border: 1px solid var(--input-border);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   font-size: 16px;
   outline-width: 0;
   padding: 16px;
@@ -152,6 +154,7 @@ header {
   border-bottom: 1px solid var(--border);
   display: flex;
   height: 52px;
+  justify-content: space-between;
   padding: 0 16px;
   position: fixed;
   width: 100%;
@@ -187,7 +190,7 @@ header p {
 .card {
   align-items: flex-start;
   background: var(--card);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -232,7 +235,7 @@ header p {
 .address {
   align-items: center;
   background: var(--background);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   color: var(--text);
   display: flex;
   font-size: 14px;
@@ -257,7 +260,7 @@ header p {
 .primary-button {
   background: var(--primary-button);
   border: 2px solid var(--primary-button);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   color: var(--primary-button-text);
   cursor: pointer;
   font-size: 14px;
@@ -273,7 +276,7 @@ header p {
 .secondary-button {
   background: transparent;
   border: 2px solid var(--primary-button);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   color: var(--primary-button);
   cursor: pointer;
   font-size: 14px;
@@ -292,7 +295,7 @@ header p {
 .callout-warning,
 .callout-error {
   align-items: flex-start;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   display: flex;
   flex-direction: column;
   font-size: 14px;
@@ -324,6 +327,7 @@ header p {
 .callout-error .address {
   background: transparent;
   border: none;
+  border-radius: 0;
   padding: 0;
 }
 
@@ -332,7 +336,7 @@ header p {
 .box {
   align-items: flex-start;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   display: flex;
   flex-direction: column;
   font-size: 14px;
@@ -344,6 +348,7 @@ header p {
 .box .address {
   background: transparent;
   border: none;
+  border-radius: 0;
   padding: 0;
 }
 

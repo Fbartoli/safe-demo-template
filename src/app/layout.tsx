@@ -3,7 +3,10 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Safe Tutorial Template',
-  description: 'Repository used as as template to build Safe demo applications.'
+  description: 'Template repository for Safe demo applications.',
+  icons: {
+    icon: '/images/favicon.ico'
+  }
 }
 
 export default function RootLayout({

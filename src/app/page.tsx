@@ -1,10 +1,16 @@
 import makeBlockie from 'ethereum-blockies-base64'
+import styles from './page.module.css'
 
 export default function Home() {
   return (
     <>
       <header>
         <h2>{'Safe{DEMO}'}</h2>
+        {true ? (
+          <button className={styles.connectButton}>Connect Wallet</button>
+        ) : (
+          <button className={styles.connectButton}>Disconnect</button>
+        )}
       </header>
       <main>
         <h1>Application Title</h1>
@@ -14,7 +20,9 @@ export default function Home() {
         >
           GitHub Repository
         </a>
-        <a href="https://docs.safe.global">Safe Developer Documentation</a>
+        <a href="https://docs.safe.global" target="_blank">
+          Safe Developer Documentation
+        </a>
         <p>
           Applications can include components such as <a href="#cards">Cards</a>
           , <a href="#grids">Grids</a>, <a href="#sections">Sections</a>,{' '}
