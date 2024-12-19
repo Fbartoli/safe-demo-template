@@ -161,8 +161,20 @@ header {
   top: 0;
 }
 
+header > div {
+  display: flex;
+  gap: 20px;
+}
+
 header p {
   font-weight: bold;
+}
+
+header .address {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }
 
 /* CLASSES */
