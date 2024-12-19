@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Safe Tutorial Template',
+  title: 'Safe Demo Template',
   description: 'Template repository for Safe demo applications.',
   icons: {
     icon: '/images/favicon.ico'

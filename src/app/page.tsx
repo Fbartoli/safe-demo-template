@@ -15,7 +15,7 @@ if (!process.env.NEXT_PUBLIC_WAGMI_PROJECT_ID) {
 }
 
 const wagmiConfig = getDefaultConfig({
-  appName: 'Safe Tutorial Template',
+  appName: 'Safe Demo Template',
   projectId: process.env.NEXT_PUBLIC_WAGMI_PROJECT_ID,
   chains: supportedChains as any,
   ssr: true
@@ -30,7 +30,7 @@ export default function Home() {
           <main>
             <h1>Application Title</h1>
             <a
-              href="https://github.com/5afe/safe-tutorial-template"
+              href="https://github.com/5afe/safe-demo-template"
               target="_blank"
             >
               GitHub Repository
