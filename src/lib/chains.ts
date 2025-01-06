@@ -1,3 +1,3 @@
-import { mainnet, sepolia } from 'viem/chains'
+import { baseSepolia, sepolia } from 'viem/chains'
 
-export const supportedChains = [mainnet, sepolia]
+export const supportedChains = [baseSepolia, sepolia]
