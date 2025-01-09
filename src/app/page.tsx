@@ -4,10 +4,10 @@ import Application from '@/components/App'
 import Components from '@/components/App/components'
 import Header from '@/components/Header'
 import { PASSKEY_FACTORY, PASSKEY_FACTORY_ABI } from '@/lib/abi'
-import { VERIFIER_ADDRESS } from '@/lib/constants'
 import { createPasskey, storePasskeyInLocalStorage } from '@/lib/passkey'
 import '@rainbow-me/rainbowkit/styles.css'
 import { PasskeyArgType } from '@safe-global/protocol-kit'
+import { getDefaultFCLP256VerifierAddress } from '@safe-global/protocol-kit/dist/src/utils/passkeys/extractPasskeyData'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Address, createPublicClient, getContract, http } from 'viem'
@@ -33,8 +33,8 @@ export default function Home() {
         transport: http()
       })
     })
-    const signerAddress = await passkeyContract.read.getSigner([BigInt(passkey.coordinates.x), BigInt(passkey.coordinates.y), BigInt(VERIFIER_ADDRESS)])
-    console.log(signerAddress)
+    const verifierAddress = getDefaultFCLP256VerifierAddress(baseSepolia.id.toString())
+    const signerAddress = await passkeyContract.read.getSigner([BigInt(passkey.coordinates.x), BigInt(passkey.coordinates.y), BigInt(verifierAddress)])
     setAddress(signerAddress)
     storePasskeyInLocalStorage(passkey)
     setSelectedPasskey(passkey)
