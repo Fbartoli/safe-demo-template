@@ -1,13 +1,18 @@
 import { PasskeyArgType, extractPasskeyData } from '@safe-global/protocol-kit'
 import { STORAGE_PASSKEY_LIST_KEY } from './constants'
 
+export type PasskeyWithDisplay = PasskeyArgType & {
+  displayName: string
+}
+
 /**
  * Create a passkey using WebAuthn API.
- * @returns {Promise<PasskeyArgType>} Passkey object with rawId and coordinates.
+ * @returns {Promise<PasskeyWithDisplay>} Passkey object with rawId, coordinates, and displayName.
  * @throws {Error} If passkey creation fails.
  */
-export async function createPasskey(): Promise<PasskeyArgType> {
-  const displayName = `Safe Owner ${new Date().toLocaleDateString()}` // This can be customized to match, for example, a user name.
+export async function createPasskey(): Promise<PasskeyWithDisplay> {
+  const now = new Date()
+  const displayName = `Safe Owner ${now.toLocaleDateString()} ${now.toLocaleTimeString()}` // This includes date and time
   // Generate a passkey credential using WebAuthn API
   const passkeyCredential = await navigator.credentials.create({
     publicKey: {
@@ -30,49 +35,55 @@ export async function createPasskey(): Promise<PasskeyArgType> {
       timeout: 60_000,
       attestation: 'none'
     }
-  })
+  }) as PublicKeyCredential
 
   if (!passkeyCredential) {
     throw Error('Passkey creation failed: No credential was returned.')
   }
 
   const passkey = await extractPasskeyData(passkeyCredential)
-  return passkey
+  return { ...passkey, displayName }
 }
 
 /**
  * Store passkey in local storage.
- * @param {PasskeyArgType} passkey - Passkey object with rawId and coordinates.
+ * @param {PasskeyWithDisplay} passkey - Passkey object with rawId and coordinates.
  */
-export function storePasskeyInLocalStorage(passkey: PasskeyArgType) {
+export function storePasskeyInLocalStorage(passkey: PasskeyWithDisplay) {
   const passkeys = loadPasskeysFromLocalStorage()
-
-  passkeys.push(passkey)
-
+  const passkeyToStore = {
+    rawId: passkey.rawId,
+    coordinates: passkey.coordinates,
+    displayName: passkey.displayName
+  }
+  passkeys.push(passkeyToStore)
   localStorage.setItem(STORAGE_PASSKEY_LIST_KEY, JSON.stringify(passkeys))
 }
 
 /**
  * Load passkeys from local storage.
- * @returns {PasskeyArgType[]} List of passkeys.
+ * @returns {PasskeyWithDisplay[]} List of passkeys.
  */
-export function loadPasskeysFromLocalStorage(): PasskeyArgType[] {
+export function loadPasskeysFromLocalStorage(): PasskeyWithDisplay[] {
   const passkeysStored = localStorage.getItem(STORAGE_PASSKEY_LIST_KEY)
-
-  const passkeyIds = passkeysStored ? JSON.parse(passkeysStored) : []
-
-  return passkeyIds
+  if (!passkeysStored) return []
+  
+  const parsedPasskeys = JSON.parse(passkeysStored)
+  return parsedPasskeys.map((passkey: any) => ({
+    rawId: passkey.rawId,
+    coordinates: passkey.coordinates,
+    displayName: passkey.displayName,
+    signerAddress: passkey.signerAddress
+  }))
 }
 
 /**
  * Get passkey object from local storage.
  * @param {string} passkeyRawId - Raw ID of the passkey.
- * @returns {PasskeyArgType} Passkey object.
+ * @returns {PasskeyWithDisplay} Passkey object.
  */
-export function getPasskeyFromRawId(passkeyRawId: string): PasskeyArgType {
+export function getPasskeyFromRawId(passkeyRawId: string): PasskeyWithDisplay {
   const passkeys = loadPasskeysFromLocalStorage()
-
   const passkey = passkeys.find((passkey) => passkey.rawId === passkeyRawId)!
-
   return passkey
 }

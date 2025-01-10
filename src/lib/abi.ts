@@ -1,4 +1,14 @@
-export const PASSKEY_FACTORY = {
+import { Address } from "viem"
+
+export const PASSKEY_FACTORY:
+{
+    "released": boolean,
+    "contractName": string,
+    "version": string,
+    "networkAddresses": {
+        [key: string]: Address
+    }
+} = {
     "released": true,
     "contractName": "SafeWebAuthnSignerFactory",
     "version": "0.2.1",
