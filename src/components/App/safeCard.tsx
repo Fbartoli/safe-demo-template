@@ -1,18 +1,23 @@
 import { PASSKEY_FACTORY, PASSKEY_FACTORY_ABI } from "@/lib/abi"
-import { SENTINEL_ADDRESS, SHARED_WEBAUTHN } from "@/lib/constants"
-import { PasskeyWithDisplay } from "@/lib/passkey"
 import { getDefaultFCLP256VerifierAddress } from "@safe-global/protocol-kit/dist/src/utils"
 import { Safe4337Pack, SponsoredPaymasterOption } from "@safe-global/relay-kit"
 import { useCallback, useEffect, useState } from "react"
-import { Address, createPublicClient, encodeFunctionData, http, parseAbiItem } from "viem"
+import { Address, createPublicClient, encodeFunctionData, http, parseAbiItem, Transaction } from "viem"
 import { Chain } from "viem/chains"
 import { toast } from "sonner"
+import { PasskeyWithSigner } from "../PasskeyManager"
+import { Eip1193Provider } from "@safe-global/protocol-kit"
+import { useWalletClient } from "wagmi"
+import { SENTINEL_ADDRESS } from "@/lib/constants"
+import { SHARED_WEBAUTHN } from "@/lib/constants"
+import { SAFE_CONFIG } from "./index"
 
 type Props = {
   chain: Chain
-  passkey: PasskeyWithDisplay
+  passkey: PasskeyWithSigner
   address: Address
   safeAddress: Address
+  withPasskey: boolean
 }
 
 // Constants
@@ -21,11 +26,12 @@ const CHAIN_IDENTIFIERS: Record<number, string> = {
   84532: 'basesep'
 }
 
-export default function SafeCard({ chain, passkey, address, safeAddress }: Props) {
+export default function SafeCard({ chain, passkey, address, safeAddress, withPasskey }: Props) {
   const [isSafeDeployed, setIsSafeDeployed] = useState<boolean>(false)
   const [userOp, setUserOp] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
+  const walletClient = useWalletClient();
 
   // Validate environment variables early
   if (!process.env.NEXT_PUBLIC_PIMLICO_API_KEY) {
@@ -69,30 +75,39 @@ export default function SafeCard({ chain, passkey, address, safeAddress }: Props
   }, [chain.id, safeAddress, checkSafeDeployment])
 
   const initializeSafe = useCallback(async (withSafeAddress?: boolean) => {
+    if (!withPasskey) {
+      const providerChainId = walletClient.data!.chain.id;
+      if (providerChainId !== chain.id) {
+        await walletClient.data!.switchChain({ id: chain.id })
+      }
+    }
+    console.log('initializeSafe', withPasskey, withSafeAddress, chain.rpcUrls.default.http[0], passkey, walletClient.data!.account.address)
     return Safe4337Pack.init({
-      provider: chain.rpcUrls.default.http[0],
-      signer: passkey,
+      provider: withPasskey ? chain.rpcUrls.default.http[0] : walletClient.data! as Eip1193Provider,
+      signer: withPasskey ? passkey : walletClient.data!.account.address,
       bundlerUrl: getBundlerUrl(),
       paymasterOptions: getPaymasterOptions(),
       options: withSafeAddress ? {
         safeAddress,
-        threshold: 1
       } : {
-        owners: ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'],
-        threshold: 1,
-        saltNonce: '123'
+        owners: [address],
+        threshold: SAFE_CONFIG.threshold,
+        saltNonce: SAFE_CONFIG.saltNonce
       }
     })
   }, [chain.rpcUrls.default.http, passkey, getBundlerUrl, getPaymasterOptions, safeAddress, address])
 
   const handleDeploy = useCallback(async () => {
     setIsLoading(true)
+    const transactions = []
     try {
-      const safe = await initializeSafe()
+      const safe = await initializeSafe(false)
       if (!safe) throw new Error('Failed to initialize Safe')
+      console.log('safe', await safe.protocolKit.getAddress())
+      console.log('safe Owners', await safe.protocolKit.getOwners())
 
       const verifierAddress = getDefaultFCLP256VerifierAddress(chain.id.toString())
-      
+
       // Prepare transactions
       const createSignerTx = {
         to: PASSKEY_FACTORY.networkAddresses[chain.id.toString()],
@@ -103,24 +118,40 @@ export default function SafeCard({ chain, passkey, address, safeAddress }: Props
         }),
         value: '0'
       }
+      transactions.push(createSignerTx)
 
-      const owners = await safe.protocolKit.getOwners()
-      const index = owners.indexOf(SHARED_WEBAUTHN)
-      const prevAddress = index === 0 ? SENTINEL_ADDRESS : owners[index - 1]
+      if (!withPasskey) {
+        const addOwnerTx = {
+          to: safeAddress,
+          data: encodeFunctionData({
+            abi: [parseAbiItem('function addOwnerWithThreshold(address owner, uint256 _threshold)')],
+            functionName: 'addOwnerWithThreshold',
+            args: [passkey.signerAddress, BigInt(1)]
+          }),
+          value: '0'
+        }
+        transactions.push(addOwnerTx)
+      } else {
+        const owners = await safe.protocolKit.getOwners()
+        const index = owners.indexOf(SHARED_WEBAUTHN)
+        const prevAddress = index === 0 ? SENTINEL_ADDRESS : owners[index - 1]
 
-      const swapOwnerTx = {
-        to: safeAddress,
-        data: encodeFunctionData({
-          abi: [parseAbiItem('function swapOwner(address prevOwner, address oldOwner, address newOwner)')],
-          functionName: 'swapOwner',
-          args: [prevAddress, owners[index], address]
-        }),
-        value: '0'
+        const swapOwnerTx = {
+          to: safeAddress,
+          data: encodeFunctionData({
+            abi: [parseAbiItem('function swapOwner(address prevOwner, address oldOwner, address newOwner)')],
+            functionName: 'swapOwner',
+            args: [prevAddress, owners[index], passkey.signerAddress]
+          }),
+          value: '0'
+        }
+        transactions.push(swapOwnerTx)
       }
+
 
       // Create and sign operation
       const safeOperation = await safe.createTransaction({
-        transactions: [createSignerTx, swapOwnerTx]
+        transactions
       })
       const signedOperation = await safe.signSafeOperation(safeOperation)
 
@@ -192,14 +223,15 @@ export default function SafeCard({ chain, passkey, address, safeAddress }: Props
   return (
     <div className="card" id="cards">
       <div className="section">
-        <h2>{chain.name}</h2>
         <div className="box" style={{ overflow: 'hidden', wordBreak: 'break-all' }}>
           <p className="title">Safe Details</p>
+          <h2>Chain: {chain.name}</h2>
+
           <div style={{ marginBottom: '12px' }}>
             <p>Address:</p>
-            <a 
-              href={safeLink} 
-              target="_blank" 
+            <a
+              href={safeLink}
+              target="_blank"
               rel="noopener noreferrer"
               style={{ wordBreak: 'break-all' }}
             >
@@ -212,8 +244,8 @@ export default function SafeCard({ chain, passkey, address, safeAddress }: Props
           {userOp && (
             <div style={{ marginBottom: '16px' }}>
               <p style={{ marginBottom: '4px' }}>Latest Operation:</p>
-              <pre className="address" style={{ 
-                wordBreak: 'break-all', 
+              <pre className="address" style={{
+                wordBreak: 'break-all',
                 whiteSpace: 'pre-wrap',
                 background: 'var(--secondary-button-background)',
                 padding: '8px',
@@ -225,16 +257,16 @@ export default function SafeCard({ chain, passkey, address, safeAddress }: Props
             </div>
           )}
           <div className="actions" style={{ gap: '8px', marginTop: '16px' }}>
-            <button 
-              className="primary-button" 
-              onClick={handleDeploy}
+            <button
+              className="primary-button"
+              onClick={() => handleDeploy()}
               disabled={isLoading || isSafeDeployed}
             >
               Deploy
             </button>
             {isSafeDeployed && (
-              <button 
-                className="secondary-button" 
+              <button
+                className="secondary-button"
                 onClick={handleTx}
                 disabled={isLoading}
               >

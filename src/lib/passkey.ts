@@ -1,5 +1,6 @@
 import { PasskeyArgType, extractPasskeyData } from '@safe-global/protocol-kit'
 import { STORAGE_PASSKEY_LIST_KEY } from './constants'
+import { PasskeyWithSigner } from '@/components/PasskeyManager'
 
 export type PasskeyWithDisplay = PasskeyArgType & {
   displayName: string
@@ -49,12 +50,13 @@ export async function createPasskey(): Promise<PasskeyWithDisplay> {
  * Store passkey in local storage.
  * @param {PasskeyWithDisplay} passkey - Passkey object with rawId and coordinates.
  */
-export function storePasskeyInLocalStorage(passkey: PasskeyWithDisplay) {
+export function storePasskeyInLocalStorage(passkey: PasskeyWithSigner) {
   const passkeys = loadPasskeysFromLocalStorage()
   const passkeyToStore = {
     rawId: passkey.rawId,
     coordinates: passkey.coordinates,
-    displayName: passkey.displayName
+    displayName: passkey.displayName,
+    signerAddress: passkey.signerAddress
   }
   passkeys.push(passkeyToStore)
   localStorage.setItem(STORAGE_PASSKEY_LIST_KEY, JSON.stringify(passkeys))
@@ -62,9 +64,9 @@ export function storePasskeyInLocalStorage(passkey: PasskeyWithDisplay) {
 
 /**
  * Load passkeys from local storage.
- * @returns {PasskeyWithDisplay[]} List of passkeys.
+ * @returns {PasskeyWithSigner[]} List of passkeys.
  */
-export function loadPasskeysFromLocalStorage(): PasskeyWithDisplay[] {
+export function loadPasskeysFromLocalStorage(): PasskeyWithSigner[] {
   const passkeysStored = localStorage.getItem(STORAGE_PASSKEY_LIST_KEY)
   if (!passkeysStored) return []
   

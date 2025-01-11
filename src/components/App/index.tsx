@@ -3,25 +3,29 @@ import { Safe4337Pack, SponsoredPaymasterOption } from '@safe-global/relay-kit'
 import { useCallback, useState, useEffect } from 'react'
 import { Address, Chain } from 'viem'
 import { baseSepolia, sepolia } from 'viem/chains'
-import SafeCard from './safeCard'
 import { toast } from 'sonner'
+import { PasskeyWithSigner } from '../PasskeyManager'
+import { useWalletClient } from 'wagmi'
+import { Eip1193Provider } from '@safe-global/protocol-kit'
+import SafeCard from './safeCard'
 
 type Props = {
-  passkey: PasskeyWithDisplay
+  passkey: PasskeyWithSigner
   address: Address
 }
 
 // Constants
 const SUPPORTED_CHAINS: Chain[] = [baseSepolia, sepolia]
-const SAFE_OWNERS: Address[] = ['0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266']
-const SAFE_CONFIG = {
+export const SAFE_CONFIG = {
   threshold: 1,
-  saltNonce: '123'
+  saltNonce: '1233'
 } as const
 
 export default function Application({ passkey, address }: Props) {
   const [safeAddress, setSafeAddress] = useState<Address>()
+  const [safePasskeyAddress, setSafePasskeyAddress] = useState<Address>()
   const [isLoading, setIsLoading] = useState(false)
+  const walletClient = useWalletClient();
 
   // Validate environment variables early
   if (!process.env.NEXT_PUBLIC_PIMLICO_API_KEY) {
@@ -38,25 +42,29 @@ export default function Application({ passkey, address }: Props) {
     paymasterUrl: getBundlerUrl(chainId)
   }), [getBundlerUrl])
 
-  const initializeSafe = useCallback(async (chain: Chain) => {
-    return Safe4337Pack.init({
-      provider: chain.rpcUrls.default.http[0],
-      signer: passkey,
+  const initializeSafe = useCallback(async (chain: Chain, withPasskey?: boolean) => {
+    const data = await Safe4337Pack.init({
+      provider: withPasskey ? chain.rpcUrls.default.http[0] : walletClient.data! as Eip1193Provider,
+      signer: withPasskey ? passkey : walletClient.data!.account.address,
       bundlerUrl: getBundlerUrl(chain.id),
       paymasterOptions: getPaymasterOptions(chain.id),
       options: {
-        owners: SAFE_OWNERS,
+        owners: [address],
         threshold: SAFE_CONFIG.threshold,
         saltNonce: SAFE_CONFIG.saltNonce
       }
     })
-  }, [passkey, getBundlerUrl, getPaymasterOptions])
+    return data
+  }, [getBundlerUrl, getPaymasterOptions])
 
   const showSafeInfo = useCallback(async () => {
     setIsLoading(true)
     try {
       const counterFactualSafe = await initializeSafe(baseSepolia)
       const address = await counterFactualSafe.protocolKit.getAddress()
+      const counterFactualSafePasskey = await initializeSafe(baseSepolia, true)
+      const safePasskeyAddress = await counterFactualSafePasskey.protocolKit.getAddress()
+      setSafePasskeyAddress(safePasskeyAddress)
       setSafeAddress(address)
       toast.success('Safe address generated successfully')
     } catch (error) {
@@ -82,7 +90,7 @@ export default function Application({ passkey, address }: Props) {
   }
 
   // Error state
-  if (!safeAddress) {
+  if (!safeAddress || !safePasskeyAddress) {
     return (
       <div className="card">
         <div className="callout-warning">
@@ -94,16 +102,37 @@ export default function Application({ passkey, address }: Props) {
 
   // Success state
   return (
-    <div className="grid" id="grids">
-      {SUPPORTED_CHAINS.map((chain) => (
-        <SafeCard
-          key={chain.id}
-          chain={chain}
-          passkey={passkey}
-          address={address}
-          safeAddress={safeAddress}
-        />
-      ))}
-    </div>
+    <>
+      <div className='card'>
+        Deployer: EOA
+        <div className="grid" id="grids">
+          {SUPPORTED_CHAINS.map((chain) => (
+            <SafeCard
+              key={chain.id}
+              chain={chain}
+              passkey={passkey}
+              address={address}
+              safeAddress={safeAddress}
+              withPasskey={false}
+            />
+          ))}
+        </div>
+      </div>
+      <div className='card'>
+        Deployer: Passkey 
+        <div className="grid" id="grids">
+          {SUPPORTED_CHAINS.map((chain) => (
+            <SafeCard
+              key={chain.id}
+              chain={chain}
+              passkey={passkey}
+              address={address}
+              safeAddress={safePasskeyAddress}
+              withPasskey={true}
+            />
+          ))}
+        </div>
+      </div>
+    </>
   )
 }

@@ -8,12 +8,12 @@ import { baseSepolia } from 'viem/chains'
 import { getDefaultFCLP256VerifierAddress } from '@safe-global/protocol-kit/dist/src/utils'
 
 type Props = {
-  onSelectPasskey: (passkey: PasskeyWithDisplay) => void
+  onSelectPasskey: (passkey: PasskeyWithSigner) => void
   selectedPasskey?: PasskeyWithDisplay
 }
 
-type PasskeyWithSigner = PasskeyWithDisplay & {
-  signerAddress?: Address
+export type PasskeyWithSigner = PasskeyWithDisplay & {
+  signerAddress: Address
 }
 
 export default function PasskeyManager({ onSelectPasskey, selectedPasskey }: Props) {
@@ -65,7 +65,7 @@ export default function PasskeyManager({ onSelectPasskey, selectedPasskey }: Pro
       console.log('storedPasskeys', storedPasskeys)
       localStorage.setItem('safe_passkey_list', JSON.stringify(storedPasskeys))
       setPasskeys([...passkeys, passkeyWithSigner])
-      onSelectPasskey(passkey)
+      onSelectPasskey(passkeyWithSigner)
       toast.success('Passkey created and selected successfully')
     } catch (err) {
       console.error(err)
